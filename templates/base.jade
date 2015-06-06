@@ -5,8 +5,19 @@ html(lang="no")
         link(rel='stylesheet', type='text/css', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css')
 
         block css
-
+            style(type='text/css').
+                body {
+                    background-color: #333333;
+                    color: #FFFFFF;
+                }
+                a {
+                    color: #00CC66;
+                }
+                h1 {
+                    color: #00CC66;
+                }
     body
+        img.img-responsive(src=url_for('static', filename='naerkultur.png'))
         div.container-fluid
             block content
 
