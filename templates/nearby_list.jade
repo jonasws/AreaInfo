@@ -1,0 +1,9 @@
+extends base.jade
+
+block content
+    div.row
+        div.col-md-12
+            each location in geosearch
+                a(href=url_for('location_detail', wid=location.pageid, title=location.title)) #{location.title}
+                br
+

@@ -1,0 +1,29 @@
+extends base.jade
+block content
+    form(action='/nearby/', id='locationForm', method='POST')
+        button(type='submit', class='btn btn-primary', id='submitButton') Submit
+
+block js
+    script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js')
+    script(type='text/javascript').
+        $(function() {
+            $('#submitButton').click(function(e) {
+                e.preventDefault();
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var locationForm = $('#locationForm');
+
+                    var latitude = document.createElement('input');
+                    $(latitude).attr('type', 'hidden');
+                    $(latitude).attr('name', 'latitude');
+                    $(latitude).attr('value', position.coords.latitude);
+                    locationForm.append(latitude);
+
+                    var longitude = document.createElement(('input'));
+                    $(longitude).attr('type', 'hidden');
+                    $(longitude).attr('name', 'longitude');
+                    $(longitude).attr('value', position.coords.longitude);
+                    locationForm.append(longitude);
+                    locationForm.submit();
+                });
+            });
+        });

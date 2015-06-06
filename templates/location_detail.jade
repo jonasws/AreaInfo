@@ -1,0 +1,25 @@
+extends base.jade
+
+block css
+    style(type='text/css').
+        img {
+        }
+
+block content
+    div.row
+        div.col-md-12
+            h1 #{wikipedia_content.title}
+            p #{wikipedia_content.extract}
+            a(href=wikipedia_content.fullurl, target='_blank') Les mer på Wikipedia!
+
+
+    div.row
+        div.col-md-12
+            h3 NRK om #{wikipedia_content.title}
+    each row in  nrk_content|batch(4)
+        div.row
+                each hit in row
+                    div.col-md-3
+                        a(href=hit.url, target='_blank')
+                            img(src=hit.image, class='img-responsive img-rounded')
+                            h4 #{hit.title}
