@@ -83,5 +83,14 @@ def location_detail():
 def index():
     return render_template('index.jade')
 
+
+
+if not app.debug:
+    import logging
+    file_handler = logging.FileHandler('/srv/www/AreaInfo/flask.log', encoding='utf-8')
+    file_handler.setLevel(logging.WARNING)
+    app.logger.addHandler(file_handler)
+
+
 if __name__ == '__main__':
     app.run(debug=True)
