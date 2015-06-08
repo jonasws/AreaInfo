@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import requests
 
 WIKIPEDIA_API_URL = 'http://no.wikipedia.org/w/api.php'

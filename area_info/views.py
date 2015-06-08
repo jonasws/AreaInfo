@@ -1,24 +1,15 @@
-#!/usr/bin/env python
 import os
 import redis
 import requests
-from flask import Flask, request, render_template, send_from_directory
+from flask import request, render_template, send_from_directory
 from flask.ext.thumbnails import Thumbnail
 from werkzeug.routing import BaseConverter
-from search_client import wikipedia_geo_search, nrk_search, wikipedia_id_lookup
+from area_info import app
+from area_info.search_client import wikipedia_geo_search, nrk_search, wikipedia_id_lookup
 
 
-THUMBNAIL_SIZE = '300x168'
-
-app = Flask(__name__)
 app.jinja_env.add_extension('pyjade.ext.jinja.PyJadeExtension')
-
-app.config['MEDIA_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'media')
-app.config['MEDIA_URL'] = '/media'
-
-
 rc = redis.StrictRedis()
-
 Thumb = Thumbnail(app)
 
 
@@ -44,7 +35,7 @@ def normalize_images(nrk_content_list):
                 for line in r.iter_content():
                     outim.write(line)
             thumbnail_url = Thumb.thumbnail(filename.split('/')[-1],
-                                            THUMBNAIL_SIZE, 'fit')
+                                            app.config['THUMBNAIL_SIZEs'], 'fit')
             rc.set(cid, thumbnail_url)
         entry['image'] = thumbnail_url
         yield entry
@@ -55,14 +46,10 @@ def media_file(filename):
     return send_from_directory(app.config['MEDIA_THUMBNAIL_FOLDER'], filename)
 
 
-@app.route('/nearby/', methods=['GET', 'POST'])
+@app.route('/nearby/', methods=['POST'])
 def nearby_list():
-    latitude = 59.8938549
-    longitude = 10.7851165
-    if request.method == 'POST':
-        latitude = float(request.form['latitude'])
-        longitude = float(request.form['longitude'])
-
+    latitude = float(request.form['latitude'])
+    longitude = float(request.form['longitude'])
     nearby_locations = wikipedia_geo_search(latitude, longitude)
     return render_template('nearby_list.jade', **nearby_locations)
 
@@ -78,19 +65,6 @@ def location_detail():
     return render_template('location_detail.jade', wikipedia_content=wikipedia_content, nrk_content=nrk_content)
 
 
-
 @app.route('/', methods=['GET'])
 def index():
     return render_template('index.jade')
-
-
-
-if not app.debug:
-    import logging
-    file_handler = logging.FileHandler('/srv/www/AreaInfo/flask.log', encoding='utf-8')
-    file_handler.setLevel(logging.WARNING)
-    app.logger.addHandler(file_handler)
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
